@@ -1,24 +1,28 @@
+CREATE DATABASE IF NOT EXISTS trailerflix CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+USE trailerflix;
+
 CREATE TABLE categorias (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL
+  nombre VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE generos (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL
+  nombre VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE actores (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(255) NOT NULL
+  nombre VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE contenido (
   id INT AUTO_INCREMENT PRIMARY KEY,
   poster VARCHAR(255) NOT NULL,
   titulo VARCHAR(255) NOT NULL,
-  resumen VARCHAR(255) NOT NULL,
-  temporadas INT NOT NULL,
+  resumen TEXT,
+  temporadas INT,
   idCategoria INT NOT NULL,
   FOREIGN KEY (idCategoria) REFERENCES categorias(id)
 );
