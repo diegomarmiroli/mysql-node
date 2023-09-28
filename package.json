@@ -1,5 +1,5 @@
 {
-  "name": "mysql-node",
+  "name": "mysql-node-project",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --watch ./src/server.js"
   },
   "keywords": [],
   "author": "",
