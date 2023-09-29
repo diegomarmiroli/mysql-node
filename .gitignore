@@ -1,6 +1,7 @@
 # Custom
 *.zip
 doc/
+.eslintrc.js
 
 # Logs
 logs
