@@ -60,6 +60,11 @@ router.post('/', async (req, res) => {
         return;
     }
 
+    if (nombre.trim().length > 255) {
+        res.status(400).json({ message: 'The name must have max 255 characters. Please try again.' });
+        return;
+    }
+
     try {
         const [genero, created] = await Genero.findOrCreate({ where: { nombre } });
         if (created) {

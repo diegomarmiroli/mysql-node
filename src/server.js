@@ -2,6 +2,8 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const express = require('express');
 const app = express();
+const marked = require('marked');
+const fs = require('fs');
 const sequelize = require('./database/connect');
 const catalogRouter = require('./router/catalogo');
 const genreRouter = require('./router/genero');
@@ -15,7 +17,16 @@ app.use(express.json());
 // Middleware para form encoded
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get('/', (req, res) => {
+    // Lee el contenido del archivo Markdown
+    const markdownContent = fs.readFileSync(path.join(__dirname, '..', 'readme.md'), 'utf8');
+
+    // Renderiza el contenido del Markdown en HTML
+    const htmlContent = marked.parse(markdownContent);
+
+    // Envía la página HTML al cliente
+    res.send(htmlContent);
+});
 
 app.use('/catalogo', catalogRouter);
 app.use('/genero', genreRouter);

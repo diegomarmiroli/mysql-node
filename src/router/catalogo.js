@@ -243,51 +243,52 @@ router.get('/categoria/:categoria', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
-    // Primero, obtén las instancias de las categorías, géneros y actores necesarios
-    const [categoriaPelicula] = await Categoria.findOrCreate({ where: { nombre: 'Pelicula' } });
-    const [generoKawaii] = await Genero.findOrCreate({ where: { nombre: 'Kawaii' } });
-    const [actorDiego] = await Actor.findOrCreate({ where: { nombre: 'Diego Marmiroli' } });
-    const [actorAnahi] = await Actor.findOrCreate({ where: { nombre: 'Anahi Garcia' } });
+// Insert de nuevo catalogo completo (Sin probar)
+// router.post('/', async (req, res) => {
+//     // Primero, obtén las instancias de las categorías, géneros y actores necesarios
+//     const [categoriaPelicula] = await Categoria.findOrCreate({ where: { nombre: 'Pelicula' } });
+//     const [generoKawaii] = await Genero.findOrCreate({ where: { nombre: 'Kawaii' } });
+//     const [actorDiego] = await Actor.findOrCreate({ where: { nombre: 'Diego Marmiroli' } });
+//     const [actorAnahi] = await Actor.findOrCreate({ where: { nombre: 'Anahi Garcia' } });
 
-    // Ahora crea el contenido con las relaciones
-    const nuevoContenido = await Contenido.create({
-        poster: 'poster de prueba',
-        titulo: 'Titulo de prueba',
-        resumen: 'Hola esto es una película',
-        temporadas: null,
-        idCategoria: categoriaPelicula.ID // Usamos el ID de la categoría encontrada
-    });
+//     // Ahora crea el contenido con las relaciones
+//     const nuevoContenido = await Contenido.create({
+//         poster: 'poster de prueba',
+//         titulo: 'Titulo de prueba',
+//         resumen: 'Hola esto es una película',
+//         temporadas: null,
+//         idCategoria: categoriaPelicula.ID // Usamos el ID de la categoría encontrada
+//     });
 
-    // Asocia el contenido con los géneros y actores
-    await nuevoContenido.addGenero(generoKawaii);
-    await nuevoContenido.addReparto([actorDiego, actorAnahi]);
+//     // Asocia el contenido con los géneros y actores
+//     await nuevoContenido.addGenero(generoKawaii);
+//     await nuevoContenido.addReparto([actorDiego, actorAnahi]);
 
-    Contenido.findOne({
-        attributes: { exclude: ['idCategoria'] },
-        where: {
-            ID: nuevoContenido.ID
-        },
-        include: [
-            {
-                model: Categoria,
-                as: 'categoria'
-            },
-            {
-                model: Genero,
-                as: 'generos',
-                through: { attributes: [] } // Evita que se incluyan atributos adicionales
-            },
-            {
-                model: Actor,
-                as: 'reparto',
-                through: { attributes: [] } // Evita que se incluyan atributos adicionales
-            }
-        ]
-    }).then(data => {
-        res.send(JSON.stringify(data));
-    });
-});
+//     Contenido.findOne({
+//         attributes: { exclude: ['idCategoria'] },
+//         where: {
+//             ID: nuevoContenido.ID
+//         },
+//         include: [
+//             {
+//                 model: Categoria,
+//                 as: 'categoria'
+//             },
+//             {
+//                 model: Genero,
+//                 as: 'generos',
+//                 through: { attributes: [] } // Evita que se incluyan atributos adicionales
+//             },
+//             {
+//                 model: Actor,
+//                 as: 'reparto',
+//                 through: { attributes: [] } // Evita que se incluyan atributos adicionales
+//             }
+//         ]
+//     }).then(data => {
+//         res.send(JSON.stringify(data));
+//     });
+// });
 
 /**
  * Elimina los objetos anidados para guardar solo los nombres anidados en la clave padre en forma des tring separado con ","
