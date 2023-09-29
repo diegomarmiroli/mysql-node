@@ -5,9 +5,15 @@ const { Op } = require('sequelize');
 const Genero = require('../models/genero');
 const [, GenerosContenido] = require('../models/union-models');
 
+// Obtener todos los generos
 router.get('/', async (req, res) => {
     try {
         const generos = await Genero.findAll();
+
+        if (!generos.length) {
+            res.status(404).json({ message: "There aren't any genres availables." });
+            return;
+        }
         res.status(200).json(generos);
     } catch (error) {
         console.log(error);
@@ -15,6 +21,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Buscar generos por nombre
 router.get('/:nombre', async (req, res) => {
     const { nombre } = req.params;
 
@@ -33,6 +40,10 @@ router.get('/:nombre', async (req, res) => {
                 }
             }
         );
+        if (!generos.length) {
+            res.status(404).json({ message: "There aren't any genres availables." });
+            return;
+        }
         res.status(200).json(generos);
     } catch (error) {
         console.log(error);
@@ -40,6 +51,7 @@ router.get('/:nombre', async (req, res) => {
     }
 });
 
+// Crear un nuevo genero
 router.post('/', async (req, res) => {
     const { nombre } = req.query;
 
@@ -61,6 +73,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Actualizar un genero por su ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -89,6 +102,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Eliminar un genero por su ID
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 

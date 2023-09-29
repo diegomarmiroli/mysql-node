@@ -5,9 +5,14 @@ const { Op } = require('sequelize');
 const Actor = require('../models/actor');
 const [ActoresContenido] = require('../models/union-models');
 
+// Obtener todos los actores
 router.get('/', async (req, res) => {
     try {
         const reparto = await Actor.findAll();
+        if (!reparto.length) {
+            res.status(404).json({ message: "There aren't any actors registered." });
+            return;
+        }
         res.status(200).json(reparto);
     } catch (error) {
         console.log(error);
@@ -15,6 +20,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Buscar actores por nombre
 router.get('/:nombre', async (req, res) => {
     const { nombre } = req.params;
 
@@ -24,7 +30,7 @@ router.get('/:nombre', async (req, res) => {
     }
 
     try {
-        const generos = await Actor.findAll(
+        const reparto = await Actor.findAll(
             {
                 where: {
                     nombre: {
@@ -33,13 +39,18 @@ router.get('/:nombre', async (req, res) => {
                 }
             }
         );
-        res.status(200).json(generos);
+        if (!reparto.length) {
+            res.status(404).json({ message: "There aren't any actors registered." });
+            return;
+        }
+        res.status(200).json(reparto);
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'An error was ocurred to find actors.' });
     }
 });
 
+// Crear un nuevo actor
 router.post('/', async (req, res) => {
     const { nombre } = req.query;
 
@@ -61,6 +72,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Actualizar un actor por su ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -89,6 +101,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Eliminar un actor por su ID
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 

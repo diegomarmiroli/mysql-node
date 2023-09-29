@@ -5,9 +5,14 @@ const { Op } = require('sequelize');
 const Categoria = require('../models/categoria');
 const Contenido = require('../models/contenido');
 
+// Obtener todas las categorias
 router.get('/', async (req, res) => {
     try {
         const categorias = await Categoria.findAll();
+        if (!categorias.length) {
+            res.status(404).json({ message: "There aren't any categories registered." });
+            return;
+        }
         res.status(200).json(categorias);
     } catch (error) {
         console.log(error);
@@ -15,6 +20,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Buscar categorias por nombre
 router.get('/:nombre', async (req, res) => {
     const { nombre } = req.params;
 
@@ -33,6 +39,10 @@ router.get('/:nombre', async (req, res) => {
                 }
             }
         );
+        if (!categorias.length) {
+            res.status(404).json({ message: "There aren't any categories registered." });
+            return;
+        }
         res.status(200).json(categorias);
     } catch (error) {
         console.log(error);
@@ -40,6 +50,7 @@ router.get('/:nombre', async (req, res) => {
     }
 });
 
+// Crear una nueva categoria
 router.post('/', async (req, res) => {
     const { nombre } = req.query;
 
@@ -61,6 +72,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Actualizar una categoria por su ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -89,6 +101,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Eliminar una categoria por su ID
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 

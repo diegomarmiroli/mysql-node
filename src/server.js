@@ -22,6 +22,10 @@ app.use('/genero', genreRouter);
 app.use('/categoria', catRouter);
 app.use('/reparto', actorRouter);
 
+app.use('/*', (req, res) => {
+    res.status(404).send('The page not found.');
+});
+
 /**
  * Inicializa el servidor conectando a la base de datos o creando
  * esta misma

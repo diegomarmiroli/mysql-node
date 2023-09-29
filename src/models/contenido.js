@@ -50,6 +50,7 @@ const Contenido = sequelize.define('Contenido', {
     tableName: 'contenido'
 });
 
+// Relacion de modelos con otros
 Categoria.hasMany(Contenido, { foreignKey: 'idCategoria' });
 Contenido.belongsTo(Categoria, { foreignKey: 'idCategoria', as: 'categoria' });
 

@@ -9,9 +9,16 @@ const Categoria = require('../models/categoria');
 const Actor = require('../models/actor');
 const Contenido = require('../models/contenido');
 
+// Obtengo el catalogo completo
 router.get('/', async (req, res) => {
     try {
         const catalogo = await sequelize.query('SELECT * FROM catalogo', { type: QueryTypes.SELECT });
+
+        if (!catalogo.length) {
+            res.status(404).json({ message: 'The catalog is empty.' });
+            return;
+        }
+
         res.status(200).json(catalogo.map(e => { return { ...e, poster: `${process.env.FILE_URL}${e.poster}` }; }));
     } catch (error) {
         console.log(error);
@@ -19,6 +26,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Obtengo un catalogo por su ID
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -45,17 +53,25 @@ router.get('/:id', async (req, res) => {
                         model: Actor,
                         as: 'reparto',
                         through: { attributes: [] } // Evita que se incluyan atributos adicionales
+
                     }
                 ]
             }
         );
-        res.status(200).json(catalogo);
+
+        if (!catalogo.length) {
+            res.status(404).json({ message: 'The catalog is empty with the id passed.' });
+            return;
+        }
+
+        res.status(200).json(mapCatalog(catalogo.get({ plain: true })));
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'An error was ocurred to find the catalog.' });
     }
 });
 
+// Obtengo catalogos por filtro de nombre
 router.get('/nombre/:nombre', async (req, res) => {
     const { nombre } = req.params;
 
@@ -91,12 +107,22 @@ router.get('/nombre/:nombre', async (req, res) => {
                 ]
             }
         );
-        res.status(200).json(catalogo);
+
+        if (!catalogo.length) {
+            res.status(404).json({ message: 'The catalog is empty with the name passed.' });
+            return;
+        }
+
+        res.status(200).json(
+            catalogo.map(e => mapCatalog(e.get({ plain: true })))
+        );
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'An error was ocurred to find the catalog.' });
     }
 });
+
+// Obtengo catalogos por filtro de genero
 router.get('/genero/:genero', async (req, res) => {
     const { genero } = req.params;
 
@@ -151,12 +177,22 @@ router.get('/genero/:genero', async (req, res) => {
                 ]
             }
         );
-        res.status(200).json(catalogoFull);
+
+        if (!catalogoFull.length) {
+            res.status(404).json({ message: 'The catalog is empty with the genre passed.' });
+            return;
+        }
+
+        res.status(200).json(
+            catalogoFull.map(e => mapCatalog(e.get({ plain: true })))
+        );
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'An error was ocurred to find the catalog.' });
     }
 });
+
+// Obtengo catalogos por filtro de categoria
 router.get('/categoria/:categoria', async (req, res) => {
     const { categoria } = req.params;
 
@@ -192,12 +228,21 @@ router.get('/categoria/:categoria', async (req, res) => {
                 ]
             }
         );
-        res.status(200).json(catalogo);
+
+        if (!catalogo.length) {
+            res.status(404).json({ message: 'The catalog is empty with the category passed.' });
+            return;
+        }
+
+        res.status(200).json(
+            catalogo.map(e => mapCatalog(e.get({ plain: true })))
+        );
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'An error was ocurred to find the catalog.' });
     }
 });
+
 router.post('/', async (req, res) => {
     // Primero, obtén las instancias de las categorías, géneros y actores necesarios
     const [categoriaPelicula] = await Categoria.findOrCreate({ where: { nombre: 'Pelicula' } });
@@ -243,5 +288,17 @@ router.post('/', async (req, res) => {
         res.send(JSON.stringify(data));
     });
 });
+
+/**
+ * Elimina los objetos anidados para guardar solo los nombres anidados en la clave padre en forma des tring separado con ","
+ * @param {Object} catalogo Objeto JS del catalogo
+ * @returns Mapeado del objeto
+ */
+function mapCatalog (catalogo) {
+    catalogo.categoria = catalogo.categoria?.nombre ?? null;
+    catalogo.reparto = catalogo.reparto?.map(e => e.nombre).join(', ') ?? null;
+    catalogo.generos = catalogo.generos?.map(e => e.nombre).join(', ') ?? null;
+    return catalogo;
+}
 
 module.exports = router;
